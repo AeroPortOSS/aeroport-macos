@@ -1,32 +1,24 @@
-# aeroport-macos
+# aeroport-core
 
-This repository contains the primary user interface and orchestration application for the AeroPort hypervisor framework. 
+This repository contains the primary macOS host application for the AeroPort ecosystem. It is responsible for hypervisor lifecycle management, communication protocols over virtual sockets, and compositing guest windows natively into macOS.
 
-Built natively in SwiftUI and AppKit, this application manages the lifecycle of the headless Windows 11 ARM64 guest environment via Apple's Virtualization.framework and serves as the window management server that renders forwarded guest application layers into floating macOS containers.
+## Prerequisites
 
----
+* Apple Silicon Mac (M1, M2, M3, M4 family)
+* macOS 14.0 Sonoma or later
+* Xcode 15.0 or later
+* Swift 5.9+
 
-## Download and Installation
+## Core Subsystems
 
-For end-users looking to run Windows applications natively on Apple Silicon:
-1. Navigate to the **Releases** section on the right side of this repository page.
-2. Download the latest compiled production `.dmg` package.
-3. Drag the application to your local `/Applications` directory.
+* **Hypervisor Engine**: Wraps Apple's `Virtualization.framework` to configure and boot the Windows 11 ARM64 guest environment, assigning hardware allocations, storage attachments, and VirtIO file system shares.
+* **VSOCK Listener**: Implements a lightweight, asynchronous multiplexing protocol over VirtIO sockets to coordinate window lifecycle, mouse/keyboard input events, and clipboard data with the guest agent.
+* **Surface Compositor**: Captures raw shared memory frame pointers provided by the guest and renders them efficiently into transparent native AppKit panels using Metal-backed layers.
+* **Storefront Dashboard**: A native SwiftUI interface that parses a remote verified application JSON registry, allowing users to initiate streamlined installation routines.
 
----
+## Building from Source
 
-## Architectural Role
-
-The macOS application acts as the host-side supervisor for the paravirtualized execution pipeline:
-* **VM Coordination:** Sets up virtual hardware definitions, maps shared memory addresses, and initializes VirtIO-FS file system shares.
-* **Window Compositing:** Listens to coordinate and visibility states sent over hypervisor sockets (VSOCK) by the guest agent, mapping individual application layers seamlessly into native AppKit window spaces.
-* **Graphics Translation Server:** Integrates Apple's native `MetalShaderConverter.framework` to ingest raw DXIL bytecode tokens from the shared memory block, compiling them dynamically into Metal Shading Language (MSL) for local GPU hardware rendering.
-
----
-
-## Workspace Prerequisites
-
-To clone and compile this repository locally, you must meet the following configuration requirements:
-* **Operating System:** macOS 14 (Sonoma) or later.
-* **Development Environment:** Xcode 15.x or later with Command Line Tools installed.
-* **Framework Dependencies:** The native Metal Shader Converter package must be downloaded and indexed within your local system paths.
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/AeroPortOSS/aeroport-core.git](https://github.com/AeroPortOSS/aeroport-core.git)
+   cd aeroport-core
